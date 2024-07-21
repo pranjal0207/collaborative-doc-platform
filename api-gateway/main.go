@@ -6,8 +6,8 @@ import (
     "net/http"
 
     "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-    "google.golang.org/grpc"
-    "google.golang.org/grpc/credentials/insecure"
+    // "google.golang.org/grpc"
+    // "google.golang.org/grpc/credentials/insecure"
 )
 
 const (
@@ -27,36 +27,36 @@ func run() error {
 
     mux := runtime.NewServeMux()
 
-    opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+    // opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
     // Register User Service
-    if err := user.RegisterUserServiceHandlerFromEndpoint(ctx, mux, userServiceEndpoint, opts); err != nil {
-        return err
-    }
-    // Register Document Service
-    if err := document.RegisterDocumentServiceHandlerFromEndpoint(ctx, mux, documentServiceEndpoint, opts); err != nil {
-        return err
-    }
-    // Register Collaboration Service
-    if err := collaboration.RegisterCollaborationServiceHandlerFromEndpoint(ctx, mux, collaborationServiceEndpoint, opts); err != nil {
-        return err
-    }
-    // Register Chat Service
-    if err := chat.RegisterChatServiceHandlerFromEndpoint(ctx, mux, chatServiceEndpoint, opts); err != nil {
-        return err
-    }
-    // Register Notification Service
-    if err := notification.RegisterNotificationServiceHandlerFromEndpoint(ctx, mux, notificationServiceEndpoint, opts); err != nil {
-        return err
-    }
-    // Register Analytics Service
-    if err := analytics.RegisterAnalyticsServiceHandlerFromEndpoint(ctx, mux, analyticsServiceEndpoint, opts); err != nil {
-        return err
-    }
-    // Register Search Service
-    if err := search.RegisterSearchServiceHandlerFromEndpoint(ctx, mux, searchServiceEndpoint, opts); err != nil {
-        return err
-    }
+    // if err := user.RegisterUserServiceHandlerFromEndpoint(ctx, mux, userServiceEndpoint, opts); err != nil {
+    //     return err
+    // }
+    // // Register Document Service
+    // if err := document.RegisterDocumentServiceHandlerFromEndpoint(ctx, mux, documentServiceEndpoint, opts); err != nil {
+    //     return err
+    // }
+    // // Register Collaboration Service
+    // if err := collaboration.RegisterCollaborationServiceHandlerFromEndpoint(ctx, mux, collaborationServiceEndpoint, opts); err != nil {
+    //     return err
+    // }
+    // // Register Chat Service
+    // if err := chat.RegisterChatServiceHandlerFromEndpoint(ctx, mux, chatServiceEndpoint, opts); err != nil {
+    //     return err
+    // }
+    // // Register Notification Service
+    // if err := notification.RegisterNotificationServiceHandlerFromEndpoint(ctx, mux, notificationServiceEndpoint, opts); err != nil {
+    //     return err
+    // }
+    // // Register Analytics Service
+    // if err := analytics.RegisterAnalyticsServiceHandlerFromEndpoint(ctx, mux, analyticsServiceEndpoint, opts); err != nil {
+    //     return err
+    // }
+    // // Register Search Service
+    // if err := search.RegisterSearchServiceHandlerFromEndpoint(ctx, mux, searchServiceEndpoint, opts); err != nil {
+    //     return err
+    // }
 
     srv := &http.Server{
         Addr:    ":8080",
