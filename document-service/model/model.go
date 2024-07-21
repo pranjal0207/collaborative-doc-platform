@@ -3,6 +3,7 @@ package model
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -27,7 +28,7 @@ func (d *DocumentModel) CreateDocument(ctx context.Context, document *Document) 
 	av, err := attributevalue.MarshalMap(document)
 
 	if err != nil {
-		return fmt.Errorf("failed to create new User %w", err)
+		return fmt.Errorf("failed to create new document %w", err)
 	}
 
 	input := &dynamodb.PutItemInput{
@@ -89,6 +90,47 @@ func (d *DocumentModel) DeleteDocumentByID(ctx context.Context, documentId strin
 	return nil
 }
 
-func (d *DocumentModel) UpdateDocumentByID(ctx context.Context, documentId string) error {
+func (d *DocumentModel) UpdateDocumentByID(ctx context.Context, documentId string, content string) error {
+	timestamp := time.Now().Format(time.RFC3339)
+
+	update := map[string]types.AttributeValueUpdate{
+		"content": {
+			Action: types.AttributeActionPut,
+			Value:  &types.AttributeValueMemberS{Value: content},
+		},
+		"timestamp": {
+			Action: types.AttributeActionPut,
+			Value:  &types.AttributeValueMemberS{Value: timestamp},
+		},
+		"versions": {
+			Action: types.AttributeActionAdd,
+			Value:  &types.AttributeValueMemberSS{Value: []string{timestamp}},
+		},
+	}
+
+	input := &dynamodb.UpdateItemInput{
+		TableName: &d.TableName,
+		Key: map[string]types.AttributeValue{
+			"document_id": &types.AttributeValueMemberS{Value: documentId},
+		},
+		AttributeUpdates: update,
+		ReturnValues:     types.ReturnValueUpdatedNew,
+	}
+
+	_, err := d.DynamoDB.UpdateItem(ctx, input)
+	if err != nil {
+		return fmt.Errorf("failed to update item: %w", err)
+	}
+
 	return nil
+}
+
+func (d *DocumentModel) ListDocumentVersions(ctx context.Context, documentId string) ([]string, error) {
+	doc, err := d.GetDocumentByID(ctx, documentId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return doc.Versions, nil
 }

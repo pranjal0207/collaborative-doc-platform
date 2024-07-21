@@ -64,13 +64,25 @@ func (s *Server) DeleteDocument(ctx context.Context, req *pb.DeleteDocumentReque
 }
 
 func (s *Server) UpdateDocument(ctx context.Context, req *pb.UpdateDocumentRequest) (*pb.UpdateDocumentResponse, error) {
+	err := s.DocumentModel.UpdateDocumentByID(ctx, req.DocumentId, req.Content)
+
+	if err != nil {
+		return nil, err
+	}
+
 	return &pb.UpdateDocumentResponse{
-		DocumentId: "SOME ID",
+		DocumentId: req.DocumentId,
 	}, nil
 }
 
 func (s *Server) ListDocumentVersions(ctx context.Context, req *pb.ListDocumentVersionsRequest) (*pb.ListDocumentVersionsResponse, error) {
+	versions, err := s.DocumentModel.ListDocumentVersions(ctx, req.DocumentId)
+
+	if err != nil {
+		return nil, err
+	}
+
 	return &pb.ListDocumentVersionsResponse{
-		Versions: []string{"version1", "version2"},
+		Versions: versions,
 	}, nil
 }
