@@ -22,6 +22,10 @@ func main() {
 	r.HandleFunc("/document/{document_id}", handler.UpdateDocumentHandler).Methods("PUT")
 	r.HandleFunc("/document/{document_id}/version", handler.ListDocumentVersionHandler).Methods("GET")
 
+	r.HandleFunc("/document/join/{document_id}", handler.CreateDocumentHandler).Methods("POST")
+	r.HandleFunc("/document/sync/{document_id}", handler.GetDocumentHandler).Methods("POST")
+	r.HandleFunc("/document/leave/{document_id}", handler.DeleteDocumentHandler).Methods("POST")
+
 	log.Printf("API Gateway listening on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
