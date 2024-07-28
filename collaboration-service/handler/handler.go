@@ -21,10 +21,13 @@ type Server struct {
 }
 
 func (s *Server) JoinDocument(ctx context.Context, req *pb.JoinDocumentRequest) (*pb.JoinDocumentResponse, error) {
-	doc := s.DocumentStore.GetDocument(req.DocumentId)
+	doc, err := s.DocumentStore.GetDocument(req.DocumentId)
+	if (err != nil) {
+		return nil, err
+	}
+
 	sessionID := uuid.New().String()
 
-	// Upgrade the HTTP connection to a WebSocket
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		conn, err := utils.Upgrade(w, r)
 		if err != nil {
@@ -47,7 +50,10 @@ func (s *Server) JoinDocument(ctx context.Context, req *pb.JoinDocumentRequest) 
 }
 
 func (s *Server) SyncChanges(ctx context.Context, req *pb.SyncChangesRequest) (*pb.SyncChangesResponse, error) {
-	doc := s.DocumentStore.GetDocument(req.DocumentId)
+	doc, err := s.DocumentStore.GetDocument(req.DocumentId)
+	if (err != nil) {
+		return nil, err
+	}
 
 	var changes map[string]interface{}
 	if err := json.Unmarshal([]byte(req.Changes), &changes); err != nil {
@@ -57,10 +63,9 @@ func (s *Server) SyncChanges(ctx context.Context, req *pb.SyncChangesRequest) (*
 	doc.Mutex.Lock()
 	defer doc.Mutex.Unlock()
 
-	// Apply changes to the document (this is a simple example)
 	doc.Content = req.Changes
+	go s.DocumentStore.UpdateDocument(req.DocumentId, req.Changes)
 
-	// Notify all connected users of the changes
 	for _, user := range doc.Users {
 		if user.UserID != req.UserId {
 			if err := user.Connection.WriteMessage(websocket.TextMessage, []byte(req.Changes)); err != nil {
@@ -73,7 +78,11 @@ func (s *Server) SyncChanges(ctx context.Context, req *pb.SyncChangesRequest) (*
 }
 
 func (s *Server) LeaveDocument(ctx context.Context, req *pb.LeaveDocumentRequest) (*pb.LeaveDocumentResponse, error) {
-	doc := s.DocumentStore.GetDocument(req.DocumentId)
+	doc, err := s.DocumentStore.GetDocument(req.DocumentId)
+	if (err != nil) {
+		return nil, err
+	}
+
 	doc.Mutex.Lock()
 	defer doc.Mutex.Unlock()
 
