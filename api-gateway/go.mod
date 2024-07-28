@@ -6,6 +6,7 @@ require github.com/gorilla/mux v1.8.1
 
 require (
 	google.golang.org/grpc v1.65.0
+	pranjal0207/collaborative-doc-platform/document-service v0.0.0
 	pranjal0207/collaborative-doc-platform/user-service v0.0.0
 )
 
@@ -18,3 +19,5 @@ require (
 )
 
 replace pranjal0207/collaborative-doc-platform/user-service => ../user-service
+
+replace pranjal0207/collaborative-doc-platform/document-service => ../document-service

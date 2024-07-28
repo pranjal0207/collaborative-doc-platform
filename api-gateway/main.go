@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	userServiceHandle "pranjal0207/collaborative-doc-platform/api-gateway/handler"
+	handler "pranjal0207/collaborative-doc-platform/api-gateway/handler"
 
 	"github.com/gorilla/mux"
 )
@@ -12,9 +12,15 @@ import (
 func main() {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/registerUser", userServiceHandle.RegisterUserHandler).Methods("POST")
-	r.HandleFunc("/login", userServiceHandle.LoginUserHandler).Methods("POST")
-	r.HandleFunc("/user", userServiceHandle.GetUserProfileHandler).Methods("GET")
+	r.HandleFunc("/user/register", handler.RegisterUserHandler).Methods("POST")
+	r.HandleFunc("/login", handler.LoginUserHandler).Methods("POST")
+	r.HandleFunc("/user", handler.GetUserProfileHandler).Methods("GET")
+
+	r.HandleFunc("/document/create", handler.CreateDocumentHandler).Methods("POST")
+	r.HandleFunc("/document/{document_id}", handler.GetDocumentHandler).Methods("GET")
+	r.HandleFunc("/document/{document_id}", handler.DeleteDocumentHandler).Methods("DELETE")
+	r.HandleFunc("/document/{document_id}", handler.UpdateDocumentHandler).Methods("PUT")
+	r.HandleFunc("/document/{document_id}/version", handler.ListDocumentVersionHandler).Methods("GET")
 
 	log.Printf("API Gateway listening on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
