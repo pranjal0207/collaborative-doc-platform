@@ -8,6 +8,8 @@ import (
 	"pranjal0207/collaborative-doc-platform/api-gateway/utils"
 
 	pb "pranjal0207/collaborative-doc-platform/collaboration-service/proto"
+
+	"github.com/gorilla/mux"
 )
 
 func JoinDocumentHandler(w http.ResponseWriter, r *http.Request) {
@@ -16,14 +18,17 @@ func JoinDocumentHandler(w http.ResponseWriter, r *http.Request) {
 
 	client := pb.NewCollaborationServiceClient(conn)
 
-	var req pb.JoinDocumentRequest
+	vars := mux.Vars(r)
+	req := &pb.JoinDocumentRequest{
+		DocumentId: vars["document_id"],
+	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	resp, err := client.JoinDocument(context.Background(), &req)
+	resp, err := client.JoinDocument(context.Background(), req)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -39,14 +44,17 @@ func SyncChangesHandler(w http.ResponseWriter, r *http.Request) {
 
 	client := pb.NewCollaborationServiceClient(conn)
 
-	var req pb.SyncChangesRequest
+	vars := mux.Vars(r)
+	req := &pb.SyncChangesRequest{
+		DocumentId: vars["document_id"],
+	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	resp, err := client.SyncChanges(context.Background(), &req)
+	resp, err := client.SyncChanges(context.Background(), req)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -62,14 +70,17 @@ func LeaveDocumentHandler(w http.ResponseWriter, r *http.Request) {
 
 	client := pb.NewCollaborationServiceClient(conn)
 
-	var req pb.LeaveDocumentRequest
+	vars := mux.Vars(r)
+	req := &pb.LeaveDocumentRequest{
+		DocumentId: vars["document_id"],
+	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	resp, err := client.LeaveDocument(context.Background(), &req)
+	resp, err := client.LeaveDocument(context.Background(), req)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
