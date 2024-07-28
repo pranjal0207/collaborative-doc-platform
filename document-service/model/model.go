@@ -59,10 +59,6 @@ func (d *DocumentModel) GetDocumentByID(ctx context.Context, documentId string) 
 		return nil, fmt.Errorf("failed to scan items: %w", err)
 	}
 
-	if result.Item != nil {
-		return nil, fmt.Errorf("document not found")
-	}
-
 	var document Document
 
 	err = attributevalue.UnmarshalMap(result.Item, &document)
