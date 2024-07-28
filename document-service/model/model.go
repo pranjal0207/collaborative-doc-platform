@@ -104,7 +104,7 @@ func (d *DocumentModel) UpdateDocumentByID(ctx context.Context, documentId strin
 		},
 		"versions": {
 			Action: types.AttributeActionAdd,
-			Value:  &types.AttributeValueMemberSS{Value: []string{timestamp}},
+			Value:  &types.AttributeValueMemberL{Value: []types.AttributeValue{&types.AttributeValueMemberS{Value: timestamp}}},
 		},
 	}
 
@@ -114,7 +114,7 @@ func (d *DocumentModel) UpdateDocumentByID(ctx context.Context, documentId strin
 			"document_id": &types.AttributeValueMemberS{Value: documentId},
 		},
 		AttributeUpdates: update,
-		ReturnValues:     types.ReturnValueUpdatedNew,
+		ReturnValues:     types.ReturnValueAllNew,
 	}
 
 	_, err := d.DynamoDB.UpdateItem(ctx, input)

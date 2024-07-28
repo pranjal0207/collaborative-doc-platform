@@ -26,7 +26,7 @@ func main() {
 	}
 
 	pb.RegisterDocumentServiceServer(s, &handler.Server{DocumentModel: &model.DocumentModel{
-		DynamoDB: dynamodb,
+		DynamoDB:  dynamodb,
 		TableName: "docs",
 	}})
 

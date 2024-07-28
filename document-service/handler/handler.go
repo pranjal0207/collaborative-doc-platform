@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"time"
 
 	"pranjal0207/collaborative-doc-platform/document-service/model"
 	pb "pranjal0207/collaborative-doc-platform/document-service/proto"
@@ -16,12 +17,15 @@ type Server struct {
 
 func (s *Server) CreateDocument(ctx context.Context, req *pb.CreateDocumentRequest) (*pb.CreateDocumentResponse, error) {
 	documentID := uuid.New().String()
+	creationTimestamp := time.Now().Format(time.RFC3339)
 
 	document := model.Document{
 		Title:      req.Title,
 		Author:     req.Author,
-		Content:    "",
+		Content:    " ",
 		DocumentID: documentID,
+		Timestamp:  creationTimestamp,
+		Versions:   []string{creationTimestamp},
 	}
 
 	err := s.DocumentModel.CreateDocument(ctx, &document)
@@ -65,7 +69,6 @@ func (s *Server) DeleteDocument(ctx context.Context, req *pb.DeleteDocumentReque
 
 func (s *Server) UpdateDocument(ctx context.Context, req *pb.UpdateDocumentRequest) (*pb.UpdateDocumentResponse, error) {
 	err := s.DocumentModel.UpdateDocumentByID(ctx, req.DocumentId, req.Content)
-
 	if err != nil {
 		return nil, err
 	}
