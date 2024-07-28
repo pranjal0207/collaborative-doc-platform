@@ -3,6 +3,8 @@ package model
 import (
 	"context"
 	"fmt"
+	"log"
+	"pranjal0207/collaborative-doc-platform/collaboration-service/utils"
 	"sync"
 	"time"
 
@@ -32,8 +34,16 @@ type DocumentStore struct {
 }
 
 func NewDocumentStore() *DocumentStore {
+	dynamodb, err := utils.DynamoDBInstance()
+
+	if err != nil {
+		log.Fatalf("failed to establish connection to db: %v", err)
+	}
+
 	return &DocumentStore{
 		Documents: make(map[string]*Document),
+		DynamoDB:  dynamodb,
+		TableName: "docs",
 	}
 }
 
@@ -69,7 +79,7 @@ func (store *DocumentStore) GetDocument(documentID string) (*Document, error) {
 	return &doc, nil
 }
 
-func (store *DocumentStore) UpdateDocument(documentID string, changes string) error{
+func (store *DocumentStore) UpdateDocument(documentID string, changes string) error {
 	timestamp := time.Now().Format(time.RFC3339)
 
 	update := map[string]types.AttributeValueUpdate{
